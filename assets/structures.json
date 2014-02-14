@@ -1,0 +1,56 @@
+/*
+    This file is NOT needed by the system to operate, but rather meant to define the structure of the filesystem storage.
+    PAY ATTENTION THAT THIS ARTICLE REFERS TO STRUCTURE ONLY. Contents of said files are located within their own localStorage keys.
+*/
+
+[
+    // All fs structure is saved as a single JSON string.
+
+    // All of them are of the the following (fsjs object [fsjso]) type:
+    {
+        "name" : "", // Name of the current fsjso folder\file
+        "type" : "dir \ file", // Defines whether current fsjso is a file or a directory
+        "contents" : [] // Should the current object be a directory, contains an array of hosted fsjso
+    },
+
+    // The fsjs root is also of the same fsjso type, only its name and type properties are null:
+    {
+        "contents" : [] // example fsjso root, whereas the whole filesystem structure is contained within the contents property
+    },
+
+    // An example for a simple full file system structure, containing dirs "a" and "b", and a file named "c" within dir "a":
+    /*
+        + root
+        |+a
+        | |-c
+        |
+        |+b
+    */
+    {
+        "contents" : [
+
+            {
+                "name" : "a",
+                "type" : "dir",
+                "contents" : [
+                    {
+                        "name" : "c",
+                        "type" : "file"
+                    }
+                ]
+            },
+
+            {
+                "name" : "b",
+                "type" : "dir",
+                "contents" : []
+            }
+
+
+        ]
+    }
+
+    // That is all. Cheers!
+
+]
+
