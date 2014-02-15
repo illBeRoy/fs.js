@@ -1,0 +1,175 @@
+<!doctype HTML>
+<html>
+
+    <head>
+        <title>fs.js DOS-esque demo</title>
+        <!-- Metadata -->
+        <meta http-equiv="content-type" content="text/html; charset: utf-8" />
+        <!-- Stylesheets -->
+        <link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'>
+        <style type="text/css">
+            body
+            {
+                background: black;
+                color: white;
+                text-shadow: 0px 0px 5px rgba(255,255,255,0.4);
+                padding: 1em;
+                font-family: 'Actor', monospace;
+                font-size: 18px;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                cursor: default;
+                line-height: 2em;
+            }
+
+            input[type=text]
+            {
+                background: none;
+                width: 100%;
+                color: white;
+                font-family: 'Actor', monospace;
+                font-size: 18px;
+                border: none;
+                outline: none;
+                text-shadow: 0px 0px 5px rgba(255,255,255,0.4);
+
+            }
+
+        </style>
+        <!-- Scripts -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script type="text/javascript" src="../src/fs.js"></script>
+    </head>
+
+    <body>
+
+        <span id="console">
+            Welcome to fsjs-dos.<br>
+            If you're not sure where to begin, the command 'help' is advised.
+        </span>
+        <br>
+        <input type="text" id="input" />
+
+        <!-- Example script -->
+        <script type="text/javascript">
+            // Our fso
+            var fso = new FSO();
+            // Demo methods
+            var demo = {
+
+                // Prints to screen whatever string we want
+                echo: function(str)
+                {
+                    $("#console").append("<br>" + str);
+                },
+
+                // Makes sure to update the command input
+                updateInput: function(keyCode)
+                {
+                    if ($("#input").val().substr(0,fso.cd().length+4) != fso.cd() + " >> ")
+                        $("#input").val(fso.cd() + " >> ");
+                    if (keyCode == 13)
+                        demo.process();
+                },
+
+                // Proccess commands sent by user
+                process: function()
+                {
+                    // Makes sure to remove the prefix of directory >>
+                    var str = $("#input").val().substr(fso.cd().length+4);
+                    // If empty then no deal
+                    if (str == "")
+                        return false;
+                    // Split by spaces
+                    var actions = str.split(" ");
+                    /*
+                        'edit a.txt Hello' would become:
+                        [0] edit
+                        [1] a.txt
+                        [2] Hello
+                    */
+                    // Use the correct FSO action according to user input
+                    switch (actions[0].toLowerCase())
+                    {
+                        case "cd":
+                            this.echo(str);
+                            fso.cd(actions[1]);
+                            break;
+                        case "dir":
+                            var list = fso.dir();
+                            this.echo("Directory of " + fso.cd());
+                            for (var i = 0; i < list.length; i++)
+                                this.echo(list[i].name + "&nbsp;&nbsp;&nbsp;&nbsp;(" + list[i].type + ")");
+                            break;
+                        case "mkdir":
+                            var ret = fso.mkdir(actions[1]);
+                            this.echo(ret ? ret: "Failed to create directory.");
+                            break;
+                        case "rmdir":
+                            var ret = fso.rmdir(actions[1]);
+                            this.echo(ret ? "Directory '" + actions[1] + "' removed succesfuly." : "Failed to remove directory.");
+                            break;
+                        case "edit":
+                            var ret = fso.edit(actions[1], actions[2]);
+                            this.echo(ret ? ret : "Failed to edit file '" + actions[1] + "'.");
+                            break;
+                        case "del":
+                            var ret = fso.del(actions[1]);
+                            this.echo(ret ? "File '" + actions[1] + "' deleted succesfuly." : "Failed to delete file '" + actions[1] + "'.");
+                            break;
+                        case "move":
+                            var ret = fso.move(actions[1], actions[2]);
+                            this.echo(ret ? "File '" + actions[1] + "' moved succesfuly." : "Failed to move file '" + actions[1] + "'.");
+                            break;
+                        case "format":
+                            var ret = fso.format();
+                            this.echo("Filesystem was formatted.");
+                            break;
+                        case "ver":
+                            this.echo("fsjs version " + fso.ver());
+                            break;
+                        case "help":
+                            this.echo("The following actions are available:<br>" +
+                                      "cd [path] - move to a directory.<br>" +
+                                      "dir - lists current directory's contents.<br>" +
+                                      "mkdir [name] - creates a new directory within the current path.<br>" +
+                                      "rmdir [name] - removes a directory from current path.<br>" +
+                                      "edit [name] [data:optional] - edit or creates a file if data is given, and displays its contents.<br>" +
+                                      "del [name] - removed a file from current directory.<br>" +
+                                      "move [path] [path] - moves a file from path a to path b (paths must be absolute).<br>" +
+                                      "format - erases all data on root.<br><br>" +
+                                      "Path format:<br>" +
+                                      "Absolute paths begin with the root symbol: " + FS._config.delims.root + "<br>" +
+                                      "Example: " + FS._config.delims.root + FS._config.delims.path + "A - is path for dir 'A' inside root.<br>" +
+                                      "Relative paths begin with directory name, whereas " + FS._config.delims.up + " stands for up level."
+                                     );
+                            break;
+                        case "lionking": // go ahead, try it.
+                            new Audio("http://a.tumblr.com/tumblr_m96kjl6DRo1qgmcoho1.mp3").play();
+                            break;
+                        default:
+                            this.echo("Unknown command '" + actions[0] + "'. Use 'help' for instructions.");
+                            break;
+                    }
+                    // Clear command input and update it
+                    $("#input").val("");
+                    demo.updateInput();
+                    // Scroll webpage to new height
+                    $(document).scrollTop(10000);
+                }
+            };
+            // Assign events
+            $("#input").focusin(function(e) {demo.updateInput(-1)});
+            $("#input").focusout(function(e) {$("#input").focus();});
+            $("#input").keydown(function(e) {demo.updateInput(e.keyCode)});
+            $("#input").keyup(function(e) {demo.updateInput(e.keyCode)});
+            $("#input").on("selectstart", false);
+            // Send user to command input
+            $("#input").focus();
+        </script>
+
+    </body>
+
+</html>

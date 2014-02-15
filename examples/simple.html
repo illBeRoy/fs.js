@@ -1,0 +1,75 @@
+<!doctype HTML>
+<html>
+
+    <head>
+        <title>fs.js simple demo</title>
+        <!-- Metadata -->
+        <meta http-equiv="content-type" content="text/html; charset: utf-8" />
+        <!-- Scripts -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script type="text/javascript" src="../src/fs.js"></script>
+    </head>
+
+    <body>
+        <script type="text/javascript">
+            var echo = function(str) { $("body").first().append(str + "<br>"); };
+            echo("This is a simple fsjs demo.");
+            echo("");
+            echo("We're gonna create a new FSO isntance named.. Well, fso.");
+            var fso = new FSO();
+            echo("<pre>var fso = new FSO();</pre>");
+            echo("");
+            echo("You can create FSO with a given path by passing it on construction - new FSO(path). Otherwise, it sets the path to root.");
+            echo("");
+            echo("First, for our demonstration, we're going to format the filetree using fso.format() - removing all previous files and directories.");
+            fso.format();
+            echo("<pre>fso.format();</pre>");
+            echo("");
+            echo("Now, we'll create three directories: a, b and c, using fso.mkdir()");
+            fso.mkdir("a");
+            fso.mkdir("b");
+            fso.mkdir("c");
+            echo('<pre>fso.mkdir("a");<br>fso.mkdir("b");<br>fso.mkdir("c");</pre>');
+            echo("");
+            echo("Now let's list all the immediate contents of root (current directory), using fso.dir()");
+            echo("<pre>fso.dir();</pre>");
+            echo("Result: " + JSON.stringify(fso.dir()));
+            echo("");
+            echo("Let's go inside the directory 'b' using fso.cd(). Note: using fso.cd() without passing a parameter returns current dir.");
+            echo('<pre>fso.cd("b");</pre>');
+            echo("Current path: " + fso.cd("b"));
+            echo("");
+            echo("And create a new file called a.txt, using fso.edit()");
+            echo('<pre>fso.edit("a.txt","Hello, World!");</pre>');
+            fso.edit("a.txt","Hello, World!");
+            echo("");
+            echo("We can pull a file's contents without editing it by calling fso.edit() without the data parameter:");
+            echo(fso.edit("a.txt"));
+            echo("");
+            echo("We can store any kind of string. Let's demonstrate saving an image encoded as a data URI, and loading it to screen:");
+ fso.edit("demo.png","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABD0lEQVQ4T2NkoBAwAvVzAXEgELNjMesTUGw9EP/FZQ8jGxtD2+FNDJUCQkAlTFBl/4E0EN+9y8DgFcmQBeTNwGIASBUDo4gAw5wXZxiSsdnw/x8DQ+c0hr/vPwFdAGSDDIXR7z4w/Ji/hSGBUYiXYc6TtTgMALqI0wxoC1bTGRgEZBhmMgrxM8x5CXQBIygEQF6AqQbaxsgCFAJiXEBAEWiAiBDDnNdXsbuAUAQJqIEMAIbB64tkGqADM+A0mQYYwQw4RqYB5iADgIH4+iCZBtjADNhDpgGOUANebiTPACEfoAHAqM+fmMfQL8CDPb3gisr3nxn+F0xmyIclG1UcmQlfUvgOlLyLNZUSSkDI8gAJpEsi8S9NvAAAAABJRU5ErkJggg==");
+            echo('<img src="' + fso.edit("demo.png") + '" />');
+            echo("");
+            echo("Now - we'll delete a.txt using the fso.del() method:");
+            echo('<pre>fso.del("a.txt");</pre>');
+            echo('Result: ' + fso.del("a.txt"));
+            echo("");
+            echo('Let\'s go back to root by either using fso.cd(".") [root] or fso.cd("..") [up one level]:');
+            echo('<pre>fso.cd("..");</pre>');
+            echo("Current path: " + fso.cd(".."));
+            echo("");
+            echo("And remove the directory 'a' by using fso.rmdir(). FYI: the system removes directories recursively, erasing all contained dirs, subdirs, and files within dirs and subdirs.");
+            echo('<pre>fso.rmdir("a");</pre>');
+            echo("Result: " + fso.rmdir("a"));
+            echo("");
+            echo('Well, that sums most of it.');
+            echo('You\'re welcome to view the full documentation at the github: <a href="https://github.com/illBeRoy/fs.js">fsjs GitHub</a>');
+            echo('Or one of the other examples (the fs we created here will be carried):');
+            echo('<a href="fsjs-dos.html">fsjs Dos-esque example</a>');
+            echo('<a href="browser.html">fsjs visual browser example</a>');
+            echo('Cheers!');
+            echo('Roy Sommer');
+        </script>
+    </body>
+
+</html>
